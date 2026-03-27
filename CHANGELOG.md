@@ -2,6 +2,11 @@
 
 All notable changes to **CopilotPulse** will be documented in this file.
 
+## [0.1.2] — 2026-03-28
+
+### Fixed
+- **Extension stuck on loading** — removed webpack `noParse` for sql-wasm.js and set `__dirname: false` so Node.js paths resolve correctly at runtime.
+
 ## [0.1.1] — 2026-03-28
 
 ### Fixed

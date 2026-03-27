@@ -20,8 +20,11 @@ const config = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
+  node: {
+    __dirname: false,
+    __filename: false,
+  },
   module: {
-    noParse: /sql-wasm\.js$/,
     rules: [
       {
         test: /\.ts$/,

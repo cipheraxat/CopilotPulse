@@ -2,7 +2,7 @@
   "name": "copilot-pulse",
   "displayName": "CopilotPulse — Copilot Chat Analytics",
   "description": "Track your GitHub Copilot Chat usage — sessions, tokens, costs, and analytics — 100% local, no data leaves your machine.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "cipheraxat",
   "license": "MIT",
   "engines": {
