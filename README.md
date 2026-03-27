@@ -18,6 +18,12 @@
 
 ---
 
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><strong>📥 Install from VS Code Marketplace</strong></a>
+</p>
+
+---
+
 ## Quick Start
 
 ```bash
