@@ -1,4 +1,4 @@
-# CopilotPulse
+<h1 align="center">CopilotPulse</h1>
 
 
 <p align="center">
