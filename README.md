@@ -10,16 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><img src="https://img.shields.io/visual-studio-marketplace/v/cipheraxat.copilot-pulse?label=VS%20Code%20Marketplace&logo=visual-studio-code&color=007acc" alt="VS Code Marketplace"></a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><img src="https://img.shields.io/visual-studio-marketplace/i/cipheraxat.copilot-pulse?color=007acc" alt="Installs"></a>
   <a href="https://github.com/cipheraxat/CopilotPulse/blob/main/LICENSE"><img src="https://img.shields.io/github/license/cipheraxat/CopilotPulse" alt="License"></a>
   <a href="https://github.com/cipheraxat/CopilotPulse"><img src="https://img.shields.io/github/stars/cipheraxat/CopilotPulse?style=social" alt="GitHub Stars"></a>
-</p>
-
----
-
-<p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><strong>📥 Install from VS Code Marketplace</strong></a>
 </p>
 
 ---
