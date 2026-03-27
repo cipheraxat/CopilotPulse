@@ -1,4 +1,4 @@
-# CopilotPulse
+<img width="1600" height="1541" alt="image" src="https://github.com/user-attachments/assets/58ae7a47-58ad-4154-8225-70a174204a9e" /># CopilotPulse
 
 <p align="center">
   <img src="media/icon.png" alt="CopilotPulse" width="128" height="128">
@@ -40,14 +40,23 @@ npm run build
 ### Dashboard
 At-a-glance overview: today's sessions, total tokens, estimated cost, and recent activity.
 
+<img width="1677" height="966" alt="image" src="https://github.com/user-attachments/assets/184d9e44-1587-45e5-9671-cadd2be09136" />
+
+
 ### Session Browser
 Search, filter, sort, and paginate through all your Copilot Chat sessions. Filter by project, date range, or status.
+
+<img width="733" height="449" alt="image" src="https://github.com/user-attachments/assets/b925b46b-ebfa-488a-bb42-1680fafee4f7" />
+
 
 ### Session Detail
 Full conversation view with message bubbles, timeline visualization, per-session token breakdown, and tool call history.
 
 ### Project Insights
 Sessions grouped by workspace — see which projects consume the most tokens and cost.
+
+<img width="732" height="241" alt="image" src="https://github.com/user-attachments/assets/1466f70c-7c38-4495-9181-b9b6c968c406" />
+
 
 ### Analytics
 Interactive charts powered by Recharts:
@@ -56,8 +65,14 @@ Interactive charts powered by Recharts:
 - **Peak hours** — when you use Copilot most
 - **Model distribution** — usage share across Claude, GPT, Grok, etc.
 
+<img width="732" height="1006" alt="image" src="https://github.com/user-attachments/assets/88bccec8-9ed0-4692-812b-8f21db6618af" />
+
+
 ### Tool Usage
 Donut chart and ranked list of all tool calls (file reads, web searches, terminal commands) across sessions.
+
+<img width="732" height="1006" alt="image" src="https://github.com/user-attachments/assets/161c10bf-4ef5-481e-8a41-b9400efb4fd8" />
+
 
 ### Per-Model Cost Estimation
 Built-in pricing table for 15+ models with accurate rates from OpenAI, Anthropic, and xAI:
@@ -77,6 +92,9 @@ Unknown models fall back to configurable default rates. Override globally via se
 
 ### Data Export
 Export all session data as JSON — useful for custom analysis or archival.
+
+<img width="733" height="738" alt="image" src="https://github.com/user-attachments/assets/9b790ca5-65b9-44cc-92da-036e353a1dc0" />
+
 
 ### Status Bar
 Live indicator showing your session count and total token usage.
