@@ -1,5 +1,6 @@
 # CopilotPulse
 
+
 <p align="center">
   <img src="media/icon.png" alt="CopilotPulse" width="128" height="128">
 </p>
