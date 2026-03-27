@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--vscode-editor-foreground, #cccccc);
+  background-color: var(--vscode-editor-background, #1e1e1e);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background, rgba(121, 121, 121, 0.4));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground, rgba(100, 100, 100, 0.7));
+}
+
+/* Utility classes for VS Code theme integration */
+.card {
+  @apply rounded-lg border p-4;
+  background: var(--vscode-editorWidget-background, #252526);
+  border-color: var(--vscode-panel-border, #2b2b2b);
+}
+
+.card:hover {
+  border-color: var(--vscode-focusBorder, #007fd4);
+}
+
+.btn-primary {
+  @apply px-4 py-2 rounded font-medium transition-colors;
+  background: var(--vscode-button-background, #0e639c);
+  color: var(--vscode-button-foreground, #ffffff);
+}
+
+.btn-primary:hover {
+  background: var(--vscode-button-hoverBackground, #1177bb);
+}
+
+.btn-secondary {
+  @apply px-4 py-2 rounded font-medium transition-colors;
+  background: var(--vscode-button-secondaryBackground, #3a3d41);
+  color: var(--vscode-button-secondaryForeground, #cccccc);
+}
+
+.btn-secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground, #45494e);
+}
+
+.input-field {
+  @apply px-3 py-2 rounded border outline-none;
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #cccccc);
+  border-color: var(--vscode-input-border, #3c3c3c);
+}
+
+.input-field:focus {
+  border-color: var(--vscode-focusBorder, #007fd4);
+}
+
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  background: var(--vscode-badge-background, #4d4d4d);
+  color: var(--vscode-badge-foreground, #ffffff);
+}
+
+.badge-success {
+  background: rgba(35, 134, 54, 0.3);
+  color: var(--vscode-testing-iconPassed, #73c991);
+}
+
+.badge-warning {
+  background: rgba(205, 145, 0, 0.3);
+  color: var(--vscode-editorWarning-foreground, #cca700);
+}
+
+.badge-error {
+  background: rgba(255, 0, 0, 0.2);
+  color: var(--vscode-errorForeground, #f48771);
+}
+
+.badge-live {
+  @apply badge-success;
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.section-title {
+  @apply text-sm font-semibold uppercase tracking-wider mb-3;
+  color: var(--vscode-descriptionForeground, #999);
+}
+
+.stat-value {
+  @apply text-2xl font-bold;
+}
+
+.stat-label {
+  @apply text-xs mt-1;
+  color: var(--vscode-descriptionForeground, #999);
+}
+
+code, pre {
+  font-family: var(--vscode-editor-font-family, 'Courier New', monospace);
+  font-size: var(--vscode-editor-font-size, 13px);
+}
+
+pre {
+  @apply rounded p-3 overflow-x-auto;
+  background: var(--vscode-textCodeBlock-background, #2d2d2d);
+}

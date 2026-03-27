@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Pulse/heartbeat line -->
+  <polyline points="2,13 5.5,13 7,13 8.5,11.5 10.5,15 12.5,7 14.5,16.5 16,10 17.5,12 19,11 21,11 22,11"/>
+  <!-- Small dot at peak -->
+  <circle cx="12.5" cy="7" r="1.2" fill="currentColor" stroke="none"/>
+</svg>

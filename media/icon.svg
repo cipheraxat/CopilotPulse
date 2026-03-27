@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#EC4899" stop-opacity="0.4"/>
+    </linearGradient>
+    <linearGradient id="dot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <filter id="pulseGlow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect x="4" y="4" width="248" height="248" rx="48" ry="48" fill="url(#bg)"/>
+  <rect x="4" y="4" width="248" height="248" rx="48" ry="48" fill="none" stroke="#334155" stroke-width="1" opacity="0.5"/>
+
+  <!-- Subtle grid dots -->
+  <g opacity="0.08" fill="#94A3B8">
+    <circle cx="52" cy="80" r="1.5"/>
+    <circle cx="88" cy="80" r="1.5"/>
+    <circle cx="124" cy="80" r="1.5"/>
+    <circle cx="160" cy="80" r="1.5"/>
+    <circle cx="196" cy="80" r="1.5"/>
+    <circle cx="52" cy="116" r="1.5"/>
+    <circle cx="88" cy="116" r="1.5"/>
+    <circle cx="124" cy="116" r="1.5"/>
+    <circle cx="160" cy="116" r="1.5"/>
+    <circle cx="196" cy="116" r="1.5"/>
+    <circle cx="52" cy="152" r="1.5"/>
+    <circle cx="88" cy="152" r="1.5"/>
+    <circle cx="124" cy="152" r="1.5"/>
+    <circle cx="160" cy="152" r="1.5"/>
+    <circle cx="196" cy="152" r="1.5"/>
+    <circle cx="52" cy="188" r="1.5"/>
+    <circle cx="88" cy="188" r="1.5"/>
+    <circle cx="124" cy="188" r="1.5"/>
+    <circle cx="160" cy="188" r="1.5"/>
+    <circle cx="196" cy="188" r="1.5"/>
+  </g>
+
+  <!-- Pulse line glow (background) -->
+  <polyline
+    points="32,148 62,148 78,148 94,128 110,168 128,88 146,178 162,118 178,138 194,128 210,128 228,128"
+    fill="none"
+    stroke="url(#glow)"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#pulseGlow)"
+  />
+
+  <!-- Main pulse line -->
+  <polyline
+    points="32,148 62,148 78,148 94,128 110,168 128,88 146,178 162,118 178,138 194,128 210,128 228,128"
+    fill="none"
+    stroke="url(#pulse)"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#pulseGlow)"
+  />
+
+  <!-- Accent dot on peak -->
+  <circle cx="128" cy="88" r="8" fill="url(#dot)" filter="url(#dotGlow)"/>
+  <circle cx="128" cy="88" r="4" fill="#FFFFFF" opacity="0.9"/>
+
+  <!-- Small token circles -->
+  <circle cx="62" cy="68" r="14" fill="none" stroke="#06B6D4" stroke-width="2" opacity="0.3"/>
+  <text x="62" y="73" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#06B6D4" opacity="0.5">$</text>
+
+  <circle cx="196" cy="188" r="14" fill="none" stroke="#EC4899" stroke-width="2" opacity="0.3"/>
+  <text x="196" y="193" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#EC4899" opacity="0.5">T</text>
+</svg>

@@ -1,0 +1,137 @@
+{
+  "name": "copilot-pulse",
+  "displayName": "CopilotPulse",
+  "description": "A local-first dashboard that tracks and visualizes your GitHub Copilot Chat usage — sessions, tokens, costs, and analytics — all inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "copilot-pulse",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "pulse",
+    "dashboard",
+    "analytics",
+    "tokens",
+    "cost"
+  ],
+  "activationEvents": [
+    "onView:tokenDashboard.sidebar",
+    "onCommand:tokenDashboard.openDashboard",
+    "onCommand:tokenDashboard.refresh",
+    "onCommand:tokenDashboard.exportData"
+  ],
+  "main": "./dist/extension.js",
+  "icon": "media/icon.png",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokenDashboard.openDashboard",
+        "title": "Open Dashboard",
+        "category": "CopilotPulse",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "tokenDashboard.refresh",
+        "title": "Refresh Data",
+        "category": "CopilotPulse",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "tokenDashboard.exportData",
+        "title": "Export Data as JSON",
+        "category": "CopilotPulse"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tokenDashboard",
+          "title": "CopilotPulse",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "tokenDashboard": [
+        {
+          "type": "webview",
+          "id": "tokenDashboard.sidebar",
+          "name": "Quick Stats"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CopilotPulse",
+      "properties": {
+        "tokenDashboard.refreshInterval": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "description": "How often to refresh data from Copilot Chat storage (in seconds)."
+        },
+        "tokenDashboard.costPerInputToken": {
+          "type": "number",
+          "default": 0.00001,
+          "description": "Estimated cost per input token (USD)."
+        },
+        "tokenDashboard.costPerOutputToken": {
+          "type": "number",
+          "default": 0.00003,
+          "description": "Estimated cost per output token (USD)."
+        },
+        "tokenDashboard.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show token usage in the status bar."
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "tokenDashboard.openDashboard"
+        },
+        {
+          "command": "tokenDashboard.refresh"
+        },
+        {
+          "command": "tokenDashboard.exportData"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "npm run build:extension && npm run build:webview",
+    "build:extension": "webpack --mode production --config webpack.extension.config.js",
+    "build:webview": "cd webview-ui && npm run build",
+    "watch": "concurrently \"npm run watch:extension\" \"npm run watch:webview\"",
+    "watch:extension": "webpack --mode development --watch --config webpack.extension.config.js",
+    "watch:webview": "cd webview-ui && npm run dev",
+    "compile": "webpack --mode development --config webpack.extension.config.js",
+    "lint": "eslint src --ext ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "concurrently": "^8.2.2",
+    "copy-webpack-plugin": "^12.0.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "sql.js": "^1.10.0"
+  }
+}
