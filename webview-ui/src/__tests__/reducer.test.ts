@@ -108,8 +108,8 @@ describe('reducer', () => {
   it('SET_SETTINGS updates settings', () => {
     const settings: AppSettings = {
       refreshInterval: 60,
-      costPerInputToken: 0.00001,
-      costPerOutputToken: 0.00003,
+      costPerInputToken: 0.000003,
+      costPerOutputToken: 0.000015,
       showStatusBar: false,
     };
     const result = reducer(initialState, { type: 'SET_SETTINGS', settings });

@@ -73,8 +73,8 @@ export class MessageHandler {
           const config = vscode.workspace.getConfiguration('tokenDashboard');
           const settings: AppSettings = {
             refreshInterval: config.get('refreshInterval', 30),
-            costPerInputToken: config.get('costPerInputToken', 0.00001),
-            costPerOutputToken: config.get('costPerOutputToken', 0.00003),
+            costPerInputToken: config.get('costPerInputToken', 0.000003),
+            costPerOutputToken: config.get('costPerOutputToken', 0.000015),
             showStatusBar: config.get('showStatusBar', true),
           };
           postMessage({ type: 'settings', data: settings });
@@ -98,8 +98,8 @@ export class MessageHandler {
           // Send back updated settings
           const updated: AppSettings = {
             refreshInterval: config.get('refreshInterval', 30),
-            costPerInputToken: config.get('costPerInputToken', 0.00001),
-            costPerOutputToken: config.get('costPerOutputToken', 0.00003),
+            costPerInputToken: config.get('costPerInputToken', 0.000003),
+            costPerOutputToken: config.get('costPerOutputToken', 0.000015),
             showStatusBar: config.get('showStatusBar', true),
           };
           postMessage({ type: 'settings', data: updated });

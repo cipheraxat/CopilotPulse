@@ -77,13 +77,13 @@
         },
         "tokenDashboard.costPerInputToken": {
           "type": "number",
-          "default": 0.00001,
-          "description": "Estimated cost per input token (USD)."
+          "default": 0.000003,
+          "description": "Estimated cost per input token (USD). Default: $3/M tokens."
         },
         "tokenDashboard.costPerOutputToken": {
           "type": "number",
-          "default": 0.00003,
-          "description": "Estimated cost per output token (USD)."
+          "default": 0.000015,
+          "description": "Estimated cost per output token (USD). Default: $15/M tokens."
         },
         "tokenDashboard.showStatusBar": {
           "type": "boolean",

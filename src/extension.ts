@@ -88,7 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Periodic refresh
   const config = vscode.workspace.getConfiguration('tokenDashboard');
-  const intervalSec = config.get<number>('refreshInterval', 30);
+  const intervalSec = Math.max(5, config.get<number>('refreshInterval', 30));
   refreshInterval = setInterval(() => {
     if (copilotAvailable) {
       fileWatcher.sync();
@@ -103,9 +103,9 @@ export async function activate(context: vscode.ExtensionContext) {
       }
       if (e.affectsConfiguration('tokenDashboard.refreshInterval')) {
         if (refreshInterval) { clearInterval(refreshInterval); }
-        const newInterval = vscode.workspace
+        const newInterval = Math.max(5, vscode.workspace
           .getConfiguration('tokenDashboard')
-          .get<number>('refreshInterval', 30);
+          .get<number>('refreshInterval', 30));
         refreshInterval = setInterval(() => {
           if (copilotAvailable) { fileWatcher.sync(); }
         }, newInterval * 1000);

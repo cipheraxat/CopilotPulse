@@ -15,11 +15,38 @@ interface VscdbSessionEntry {
   lastMessageDate?: number;
   timing?: {
     created?: number;
+    startTime?: number;
     lastRequestStarted?: number;
     lastRequestEnded?: number;
+    endTime?: number;
   };
   isEmpty?: boolean;
   isExternal?: boolean;
+}
+
+/** Shape of a single event in a transcript JSONL file */
+interface TranscriptEvent {
+  type: string;
+  data: {
+    sessionId?: string;
+    content?: string;
+    messageId?: string;
+    toolRequests?: TranscriptToolRequest[];
+    turnId?: string;
+    toolCallId?: string;
+    success?: boolean;
+    attachments?: unknown[];
+  };
+  id: string;
+  timestamp: string;
+  parentId: string | null;
+}
+
+interface TranscriptToolRequest {
+  toolCallId: string;
+  name: string;
+  arguments: string;
+  type: string;
 }
 
 /** Shape of a single user-input item stored in memento/interactive-session */
@@ -99,7 +126,27 @@ export class CopilotDataReader {
 
         const dirPath = path.join(this.workspaceStoragePath, dir.name);
         const dbPath = path.join(dirPath, 'state.vscdb');
+        const transcriptDir = path.join(dirPath, 'GitHub.copilot-chat', 'transcripts');
 
+        // Try transcript files first (most accurate data source)
+        if (fsSync.existsSync(transcriptDir)) {
+          try {
+            const transcriptSessions = await this.readTranscriptDir(dirPath, transcriptDir);
+            if (transcriptSessions.length > 0) {
+              sessions.push(...transcriptSessions);
+              // Also read vscdb for sessions NOT covered by transcripts
+              if (fsSync.existsSync(dbPath)) {
+                try {
+                  const vscdbSessions = await this.readWorkspaceDb(dirPath, dbPath);
+                  sessions.push(...vscdbSessions);
+                } catch { /* skip */ }
+              }
+              continue;
+            }
+          } catch { /* fall through to vscdb */ }
+        }
+
+        // Fallback: vscdb only
         if (!fsSync.existsSync(dbPath)) { continue; }
         if (!(await this.hasFileChanged(dbPath))) { continue; }
 
@@ -117,8 +164,68 @@ export class CopilotDataReader {
     return sessions;
   }
 
+  /** Read all transcript JSONL files from a workspace's transcript directory. */
+  private async readTranscriptDir(dirPath: string, transcriptDir: string): Promise<Session[]> {
+    const sessions: Session[] = [];
+    const workspaceName = await this.readWorkspaceName(dirPath);
+
+    // Get model name from history items in vscdb (if available)
+    let modelName: string | undefined;
+    const dbPath = path.join(dirPath, 'state.vscdb');
+    if (this.SQL && fsSync.existsSync(dbPath)) {
+      try {
+        const buffer = await fs.readFile(dbPath);
+        const db = new this.SQL.Database(buffer);
+        try {
+          const historyRows = db.exec("SELECT value FROM ItemTable WHERE key='memento/interactive-session'");
+          if (historyRows.length && historyRows[0].values.length) {
+            const historyData = JSON.parse(historyRows[0].values[0][0] as string);
+            const items: HistoryItem[] = historyData?.history?.copilot || [];
+            if (items.length > 0) {
+              modelName = items[items.length - 1].selectedModel?.metadata?.name ?? undefined;
+            }
+          }
+        } finally {
+          db.close();
+        }
+      } catch { /* ignore */ }
+    }
+
+    try {
+      const files = await fs.readdir(transcriptDir);
+      for (const file of files) {
+        if (!file.endsWith('.jsonl')) { continue; }
+
+        const filePath = path.join(transcriptDir, file);
+        if (!(await this.hasFileChanged(filePath))) { continue; }
+
+        try {
+          const content = await fs.readFile(filePath, 'utf-8');
+          const events: TranscriptEvent[] = [];
+          for (const line of content.split('\n')) {
+            const trimmed = line.trim();
+            if (!trimmed) { continue; }
+            try {
+              events.push(JSON.parse(trimmed));
+            } catch { /* skip malformed lines */ }
+          }
+          if (events.length > 0) {
+            const session = this.buildSessionFromTranscript(
+              file.replace('.jsonl', ''), events, workspaceName, modelName
+            );
+            sessions.push(session);
+          }
+        } catch { /* skip unreadable files */ }
+      }
+    } catch { /* directory not readable */ }
+
+    return sessions;
+  }
+
   private async readWorkspaceDb(dirPath: string, dbPath: string): Promise<Session[]> {
     if (!this.SQL) { return []; }
+
+    if (!(await this.hasFileChanged(dbPath))) { return []; }
 
     const buffer = await fs.readFile(dbPath);
     const db = new this.SQL.Database(buffer);
@@ -156,7 +263,6 @@ export class CopilotDataReader {
         } catch { /* ignore parse errors */ }
       }
 
-      // Total AI output characters
       const totalAiChars = aiStatSessions.reduce((s, a) => s + (a.aiCharacters || 0), 0);
       const totalAiOutputTokens = Math.ceil(totalAiChars / 4);
 
@@ -165,10 +271,8 @@ export class CopilotDataReader {
         ? historyItems[historyItems.length - 1].selectedModel?.metadata?.name ?? undefined
         : undefined;
 
-      // Build sessions
+      // Build sessions from vscdb index
       const sessions: Session[] = [];
-
-      // Distribute history items & output tokens proportionally across sessions
       const perSessionHistory = Math.max(1, Math.floor(historyItems.length / nonEmpty.length));
       const perSessionOutputTokens = nonEmpty.length > 0
         ? Math.floor(totalAiOutputTokens / nonEmpty.length)
@@ -176,91 +280,208 @@ export class CopilotDataReader {
 
       for (let idx = 0; idx < nonEmpty.length; idx++) {
         const entry = nonEmpty[idx];
-        const startTime = entry.timing?.created || entry.lastMessageDate || Date.now();
-        const endTime = entry.timing?.lastRequestEnded || entry.lastMessageDate || startTime;
+        const startTime = entry.timing?.startTime || entry.timing?.created || entry.lastMessageDate || Date.now();
+        const endTime = entry.timing?.endTime || entry.timing?.lastRequestEnded || entry.lastMessageDate || startTime;
 
-        // Get the slice of history items for this session
         const historySliceStart = idx * perSessionHistory;
         const historySliceEnd = idx === nonEmpty.length - 1
           ? historyItems.length
           : historySliceStart + perSessionHistory;
         const sessionHistory = historyItems.slice(historySliceStart, historySliceEnd);
 
-        // Build user messages from history
-        const messages: Message[] = [];
-        let inputTokens = 0;
-
-        for (let mi = 0; mi < sessionHistory.length; mi++) {
-          const h = sessionHistory[mi];
-          const tokens = estimateTokens(h.inputText);
-          inputTokens += tokens;
-
-          messages.push({
-            id: `${entry.sessionId}-msg-${mi * 2}`,
-            sessionId: entry.sessionId,
-            role: 'user',
-            content: h.inputText,
-            timestamp: startTime + mi * 60000,
-            inputTokens: tokens,
-            outputTokens: 0,
-            model: h.selectedModel?.metadata?.name,
-          });
-
-          // Create a synthetic assistant response placeholder
-          messages.push({
-            id: `${entry.sessionId}-msg-${mi * 2 + 1}`,
-            sessionId: entry.sessionId,
-            role: 'assistant',
-            content: '(response not stored in local data)',
-            timestamp: startTime + mi * 60000 + 5000,
-            inputTokens: 0,
-            outputTokens: Math.floor(perSessionOutputTokens / Math.max(1, sessionHistory.length)),
-            model: h.selectedModel?.metadata?.name,
-          });
-        }
-
-        // If no history items mapped, create a minimal message pair
-        if (messages.length === 0) {
-          inputTokens = estimateTokens(entry.title);
-          messages.push({
-            id: `${entry.sessionId}-msg-0`,
-            sessionId: entry.sessionId,
-            role: 'user',
-            content: entry.title,
-            timestamp: startTime,
-            inputTokens,
-            outputTokens: 0,
-          });
-        }
-
-        const outputTokens = perSessionOutputTokens;
-        const totalTokens = inputTokens + outputTokens;
-
-        sessions.push({
-          id: entry.sessionId,
-          title: entry.title || 'Untitled Session',
-          slug: entry.sessionId.slice(0, 8),
-          workspace: workspaceName.path,
-          workspaceName: workspaceName.name,
-          startTime,
-          endTime,
-          duration: Math.max(0, endTime - startTime),
-          messageCount: messages.length,
-          inputTokens,
-          outputTokens,
-          totalTokens,
-          estimatedCost: estimateCost(inputTokens, outputTokens, modelName),
-          model: modelName,
-          status: this.inferSessionStatus(endTime),
-          messages,
-          toolCalls: [],
-        });
+        sessions.push(this.buildSessionFromHistory(
+          entry, sessionHistory, modelName, workspaceName,
+          startTime, endTime, perSessionOutputTokens
+        ));
       }
 
       return sessions;
     } finally {
       db.close();
     }
+  }
+
+  /** Build a session from transcript JSONL events (real data). */
+  private buildSessionFromTranscript(
+    sessionId: string,
+    events: TranscriptEvent[],
+    workspaceName: { name: string; path: string },
+    modelName?: string
+  ): Session {
+    const messages: Message[] = [];
+    const toolCalls: ToolCall[] = [];
+    let inputTokens = 0;
+    let outputTokens = 0;
+    const model = modelName;
+    let firstTimestamp = 0;
+    let lastTimestamp = 0;
+    let title = '';
+
+    for (const event of events) {
+      const ts = new Date(event.timestamp).getTime() || Date.now();
+      if (!firstTimestamp || ts < firstTimestamp) { firstTimestamp = ts; }
+      if (ts > lastTimestamp) { lastTimestamp = ts; }
+
+      if (event.type === 'user.message') {
+        const content = event.data.content || '';
+        const tokens = estimateTokens(content);
+        inputTokens += tokens;
+
+        if (!title && content) {
+          title = content.slice(0, 80);
+          if (content.length > 80) { title += '...'; }
+        }
+
+        messages.push({
+          id: event.id,
+          sessionId,
+          role: 'user',
+          content,
+          timestamp: ts,
+          inputTokens: tokens,
+          outputTokens: 0,
+        });
+      } else if (event.type === 'assistant.message') {
+        const content = event.data.content || '';
+        const toolRequests = event.data.toolRequests || [];
+
+        // Assistant text content counts as output tokens
+        let msgOutputTokens = estimateTokens(content);
+
+        // Tool call arguments are also model-generated output
+        for (const tr of toolRequests) {
+          const argTokens = estimateTokens(tr.arguments || '');
+          msgOutputTokens += argTokens;
+
+          toolCalls.push({
+            id: tr.toolCallId || crypto.randomUUID(),
+            sessionId,
+            messageId: event.id,
+            name: tr.name || 'unknown',
+            input: tr.arguments,
+            timestamp: ts,
+            status: 'success',
+          });
+        }
+
+        outputTokens += msgOutputTokens;
+
+        messages.push({
+          id: event.id,
+          sessionId,
+          role: 'assistant',
+          content: content || (toolRequests.length > 0
+            ? `[${toolRequests.map(t => t.name).join(', ')}]`
+            : ''),
+          timestamp: ts,
+          inputTokens: 0,
+          outputTokens: msgOutputTokens,
+          model,
+        });
+      }
+    }
+
+    const startTime = firstTimestamp || Date.now();
+    const endTime = lastTimestamp || startTime;
+    const totalTokens = inputTokens + outputTokens;
+
+    return {
+      id: sessionId,
+      title: title || 'Untitled Session',
+      slug: sessionId.slice(0, 8),
+      workspace: workspaceName.path,
+      workspaceName: workspaceName.name,
+      startTime,
+      endTime,
+      duration: Math.max(0, endTime - startTime),
+      messageCount: messages.length,
+      inputTokens,
+      outputTokens,
+      totalTokens,
+      estimatedCost: estimateCost(inputTokens, outputTokens, model),
+      model,
+      status: this.inferSessionStatus(endTime),
+      messages,
+      toolCalls,
+    };
+  }
+
+  /** Build a session from vscdb history items (fallback approximation). */
+  private buildSessionFromHistory(
+    entry: VscdbSessionEntry,
+    sessionHistory: HistoryItem[],
+    modelName: string | undefined,
+    workspaceName: { name: string; path: string },
+    startTime: number,
+    endTime: number,
+    perSessionOutputTokens: number
+  ): Session {
+    const messages: Message[] = [];
+    let inputTokens = 0;
+
+    for (let mi = 0; mi < sessionHistory.length; mi++) {
+      const h = sessionHistory[mi];
+      const tokens = estimateTokens(h.inputText);
+      inputTokens += tokens;
+
+      messages.push({
+        id: `${entry.sessionId}-msg-${mi * 2}`,
+        sessionId: entry.sessionId,
+        role: 'user',
+        content: h.inputText,
+        timestamp: startTime + mi * 60000,
+        inputTokens: tokens,
+        outputTokens: 0,
+        model: h.selectedModel?.metadata?.name,
+      });
+
+      messages.push({
+        id: `${entry.sessionId}-msg-${mi * 2 + 1}`,
+        sessionId: entry.sessionId,
+        role: 'assistant',
+        content: '(response not stored in local data)',
+        timestamp: startTime + mi * 60000 + 5000,
+        inputTokens: 0,
+        outputTokens: Math.floor(perSessionOutputTokens / Math.max(1, sessionHistory.length)),
+        model: h.selectedModel?.metadata?.name,
+      });
+    }
+
+    if (messages.length === 0) {
+      inputTokens = estimateTokens(entry.title);
+      messages.push({
+        id: `${entry.sessionId}-msg-0`,
+        sessionId: entry.sessionId,
+        role: 'user',
+        content: entry.title,
+        timestamp: startTime,
+        inputTokens,
+        outputTokens: 0,
+      });
+    }
+
+    const outputTokens = perSessionOutputTokens;
+    const totalTokens = inputTokens + outputTokens;
+
+    return {
+      id: entry.sessionId,
+      title: entry.title || 'Untitled Session',
+      slug: entry.sessionId.slice(0, 8),
+      workspace: workspaceName.path,
+      workspaceName: workspaceName.name,
+      startTime,
+      endTime,
+      duration: Math.max(0, endTime - startTime),
+      messageCount: messages.length,
+      inputTokens,
+      outputTokens,
+      totalTokens,
+      estimatedCost: estimateCost(inputTokens, outputTokens, modelName),
+      model: modelName,
+      status: this.inferSessionStatus(endTime),
+      messages,
+      toolCalls: [],
+    };
   }
 
   private async readWorkspaceName(dirPath: string): Promise<{ name: string; path: string }> {

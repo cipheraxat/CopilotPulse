@@ -2,10 +2,12 @@
  * Format a cost value as USD.
  */
 export function formatCost(cost: number): string {
-  if (cost < 0.01) {
-    return `$${cost.toFixed(4)}`;
+  const abs = Math.abs(cost);
+  const sign = cost < 0 ? '-' : '';
+  if (abs < 0.01) {
+    return `${sign}$${abs.toFixed(4)}`;
   }
-  return `$${cost.toFixed(2)}`;
+  return `${sign}$${abs.toFixed(2)}`;
 }
 
 /**
