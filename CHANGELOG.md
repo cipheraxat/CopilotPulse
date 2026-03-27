@@ -2,6 +2,11 @@
 
 All notable changes to **CopilotPulse** will be documented in this file.
 
+## [0.1.1] — 2026-03-28
+
+### Fixed
+- **sql.js not bundled** — `sql.js` was marked as a webpack external, causing the extension to fail when installed from the marketplace (node_modules excluded from VSIX).
+
 ## [0.1.0] — 2026-03-28
 
 ### Added

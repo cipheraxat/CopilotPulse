@@ -16,12 +16,12 @@ const config = {
   },
   externals: {
     vscode: 'commonjs vscode',
-    'sql.js': 'commonjs sql.js',
   },
   resolve: {
     extensions: ['.ts', '.js'],
   },
   module: {
+    noParse: /sql-wasm\.js$/,
     rules: [
       {
         test: /\.ts$/,
