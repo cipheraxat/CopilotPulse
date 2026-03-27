@@ -79,10 +79,10 @@ export class CopilotDataReader {
   private SQL: SqlJsStatic | null = null;
   private fileModTimes = new Map<string, number>();
 
-  async initialize(wasmPath: string): Promise<boolean> {
+  async initialize(wasmPath: string, globalStoragePath: string): Promise<boolean> {
     this.SQL = await initSqlJs({ locateFile: () => wasmPath });
-    this.storagePath = getCopilotChatStoragePath();
-    this.workspaceStoragePath = getWorkspaceStorageBasePath();
+    this.storagePath = getCopilotChatStoragePath(globalStoragePath);
+    this.workspaceStoragePath = getWorkspaceStorageBasePath(globalStoragePath);
 
     const hasLegacy = this.storagePath && fsSync.existsSync(this.storagePath);
     const hasVscdb = this.workspaceStoragePath && fsSync.existsSync(this.workspaceStoragePath);
@@ -224,8 +224,6 @@ export class CopilotDataReader {
 
   private async readWorkspaceDb(dirPath: string, dbPath: string): Promise<Session[]> {
     if (!this.SQL) { return []; }
-
-    if (!(await this.hasFileChanged(dbPath))) { return []; }
 
     const buffer = await fs.readFile(dbPath);
     const db = new this.SQL.Database(buffer);

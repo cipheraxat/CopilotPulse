@@ -27,11 +27,6 @@ export class DashboardPanel {
       async (message: MessageToExtension) => {
         if (message.type === 'refresh') {
           await this.fileWatcher.sync();
-          // After sync, refresh dashboard stats
-          await this.messageHandler.handle(
-            { type: 'get-dashboard-stats' },
-            (msg) => this.panel.webview.postMessage(msg),
-          );
           return;
         }
 

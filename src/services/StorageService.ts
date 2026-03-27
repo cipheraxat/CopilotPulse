@@ -329,17 +329,22 @@ export class StorageService {
     return this.getSessions({ sortBy: 'date', sortOrder: 'desc', limit });
   }
 
-  getAllToolUsage(): { name: string; count: number; sessionCount: number }[] {
+  getAllToolUsage(from?: number, to?: number): { name: string; count: number; sessionCount: number }[] {
     if (!this.db) { return []; }
 
-    const rows = this.db.exec(`
+    let query = `
       SELECT name, 
              COUNT(*) as count,
              COUNT(DISTINCT session_id) as session_count
-      FROM tool_calls
-      GROUP BY name
-      ORDER BY count DESC
-    `);
+      FROM tool_calls`;
+    const params: unknown[] = [];
+    if (from !== undefined && to !== undefined) {
+      query += ' WHERE timestamp >= ? AND timestamp <= ?';
+      params.push(from, to);
+    }
+    query += ' GROUP BY name ORDER BY count DESC';
+
+    const rows = this.db.exec(query, params);
 
     if (!rows.length) { return []; }
     return rows[0].values.map((row) => ({

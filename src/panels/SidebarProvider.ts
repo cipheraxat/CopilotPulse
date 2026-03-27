@@ -41,15 +41,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         if (this.fileWatcher) {
           await this.fileWatcher.sync();
         }
-        await this.messageHandler.handle(
-          { type: 'get-dashboard-stats' },
-          (msg) => webviewView.webview.postMessage(msg),
-        );
         return;
       }
 
       if (message.type === 'navigate') {
-        // Open the full dashboard panel and navigate there
         vscode.commands.executeCommand('tokenDashboard.openDashboard');
         return;
       }

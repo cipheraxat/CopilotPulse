@@ -47,7 +47,7 @@ export class AnalyticsService {
       inputTokensOverTime: timeSeries.map((d) => ({ date: d.date, value: d.inputTokens })),
       outputTokensOverTime: timeSeries.map((d) => ({ date: d.date, value: d.outputTokens })),
       costOverTime: timeSeries.map((d) => ({ date: d.date, value: d.cost })),
-      toolUsage: this.getToolUsageStats(),
+      toolUsage: this.getToolUsageStats(from, to),
       peakHours,
       modelDistribution: modelDist.map((m) => ({
         model: m.model,
@@ -58,8 +58,8 @@ export class AnalyticsService {
     };
   }
 
-  getToolUsageStats(): ToolUsageStat[] {
-    const raw = this.storage.getAllToolUsage();
+  getToolUsageStats(from?: number, to?: number): ToolUsageStat[] {
+    const raw = this.storage.getAllToolUsage(from, to);
     const total = raw.reduce((sum, t) => sum + t.count, 0);
 
     return raw.map((t) => ({

@@ -37,7 +37,9 @@ export function Projects() {
             <button
               key={project.id}
               className="card w-full text-left cursor-pointer transition-all hover:scale-[1.01]"
-              onClick={() => navigate(`/projects/${project.id}`)}
+              onClick={() => {
+                navigate('/sessions');
+              }}
             >
               <div className="flex items-start justify-between mb-2">
                 <div>

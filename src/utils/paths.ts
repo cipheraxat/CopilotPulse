@@ -1,32 +1,22 @@
-import * as os from 'os';
 import * as path from 'path';
 
-function getCodeUserPath(): string {
-  const platform = os.platform();
-  const homeDir = os.homedir();
-
-  switch (platform) {
-    case 'darwin':
-      return path.join(homeDir, 'Library', 'Application Support', 'Code', 'User');
-    case 'linux':
-      return path.join(homeDir, '.config', 'Code', 'User');
-    case 'win32':
-      return path.join(process.env.APPDATA || path.join(homeDir, 'AppData', 'Roaming'), 'Code', 'User');
-    default:
-      return path.join(homeDir, '.config', 'Code', 'User');
-  }
+/**
+ * Derive the Copilot Chat globalStorage path from the extension's own globalStorage path.
+ * This works across all VS Code variants (regular, Insiders, Cursor, etc.).
+ *
+ * @param extensionGlobalStoragePath - context.globalStorageUri.fsPath
+ */
+export function getCopilotChatStoragePath(extensionGlobalStoragePath: string): string {
+  const globalStorageDir = path.dirname(extensionGlobalStoragePath);
+  return path.join(globalStorageDir, 'github.copilot-chat');
 }
 
 /**
- * Get the OS-specific globalStorage path for the Copilot Chat extension.
+ * Derive the workspaceStorage base path from the extension's own globalStorage path.
+ *
+ * @param extensionGlobalStoragePath - context.globalStorageUri.fsPath
  */
-export function getCopilotChatStoragePath(): string {
-  return path.join(getCodeUserPath(), 'globalStorage', 'github.copilot-chat');
-}
-
-/**
- * Get the OS-specific workspaceStorage base path for VS Code.
- */
-export function getWorkspaceStorageBasePath(): string {
-  return path.join(getCodeUserPath(), 'workspaceStorage');
+export function getWorkspaceStorageBasePath(extensionGlobalStoragePath: string): string {
+  const userDir = path.dirname(path.dirname(extensionGlobalStoragePath));
+  return path.join(userDir, 'workspaceStorage');
 }

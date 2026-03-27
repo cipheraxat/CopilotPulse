@@ -172,7 +172,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(() => {
     send({ type: 'refresh' });
-  }, [send]);
+    // Re-fetch data for the current page after sync
+    fetchDashboardStats();
+    const route = state.currentRoute;
+    if (route === '/sessions') { fetchSessions(); }
+    else if (route === '/analytics') { fetchAnalytics('30d'); }
+    else if (route === '/projects') { fetchProjects(); }
+    else if (route === '/tools') { fetchTools(); }
+  }, [send, state.currentRoute, fetchDashboardStats, fetchSessions, fetchAnalytics, fetchProjects, fetchTools]);
 
   // Fetch initial data
   useEffect(() => {

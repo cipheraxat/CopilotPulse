@@ -16,6 +16,7 @@ const config = {
   },
   externals: {
     vscode: 'commonjs vscode',
+    'sql.js': 'commonjs ./sql-wasm.js',
   },
   resolve: {
     extensions: ['.ts', '.js'],

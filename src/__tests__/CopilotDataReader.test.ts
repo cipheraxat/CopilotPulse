@@ -30,17 +30,17 @@ describe('CopilotDataReader', () => {
   });
 
   it('should initialize when storage path exists', async () => {
-    expect(await reader.initialize('/fake/wasm')).toBe(true);
+    expect(await reader.initialize('/fake/wasm', '/fake/globalStorage/ext')).toBe(true);
   });
 
   it('should return empty array when no files exist', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
     const sessions = await reader.scanSessions();
     expect(sessions).toEqual([]);
   });
 
   it('should parse a single conversation JSON file', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversation = {
       id: 'conv-1',
@@ -70,7 +70,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should parse an array of conversations', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversations = [
       {
@@ -95,7 +95,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should parse a wrapper object with conversations array', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const data = {
       conversations: [
@@ -114,7 +114,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should parse JSONL files', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const lines = [
       JSON.stringify({ id: 'j1', messages: [{ role: 'user', content: 'Line 1' }] }),
@@ -128,7 +128,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should scan subdirectories', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const subDir = path.join(tmpStoragePath, 'subdir');
     fs.mkdirSync(subDir);
@@ -144,7 +144,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should skip malformed JSON files', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     fs.writeFileSync(path.join(tmpStoragePath, 'bad.json'), 'not valid json {{{');
     fs.writeFileSync(
@@ -158,7 +158,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should extract tool calls from messages', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversation = {
       id: 'tc-1',
@@ -188,7 +188,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should derive title from first user message when no title', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversation = {
       id: 'no-title',
@@ -208,7 +208,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should estimate tokens from message content', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversation = {
       id: 'tokens-test',
@@ -230,7 +230,7 @@ describe('CopilotDataReader', () => {
   });
 
   it('should normalize message roles', async () => {
-    await reader.initialize('/fake/wasm');
+    await reader.initialize('/fake/wasm', '/fake/globalStorage/ext');
 
     const conversation = {
       id: 'roles-test',

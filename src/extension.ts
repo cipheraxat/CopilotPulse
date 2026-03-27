@@ -76,7 +76,8 @@ export async function activate(context: vscode.ExtensionContext) {
     await storage.initialize();
 
     const wasmPath = path.join(context.extensionPath, 'dist', 'sql-wasm.wasm');
-    copilotAvailable = await reader.initialize(wasmPath);
+    const globalStoragePath = context.globalStorageUri.fsPath;
+    copilotAvailable = await reader.initialize(wasmPath, globalStoragePath);
 
     if (copilotAvailable) {
       fileWatcher.start();
