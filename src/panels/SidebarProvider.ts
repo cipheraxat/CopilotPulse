@@ -8,12 +8,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'tokenDashboard.sidebar';
 
   private view?: vscode.WebviewView;
+  private fileWatcher?: FileWatcher;
 
   constructor(
     private extensionUri: vscode.Uri,
     private messageHandler: MessageHandler,
-    private fileWatcher: FileWatcher,
   ) {}
+
+  setFileWatcher(watcher: FileWatcher): void {
+    this.fileWatcher = watcher;
+  }
 
   resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -34,7 +38,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (message: MessageToExtension) => {
       if (message.type === 'refresh') {
-        await this.fileWatcher.sync();
+        if (this.fileWatcher) {
+          await this.fileWatcher.sync();
+        }
         await this.messageHandler.handle(
           { type: 'get-dashboard-stats' },
           (msg) => webviewView.webview.postMessage(msg),

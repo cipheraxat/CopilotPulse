@@ -19,20 +19,26 @@ export async function activate(context: vscode.ExtensionContext) {
   const analytics = new AnalyticsService(storage);
   const messageHandler = new MessageHandler(storage, analytics, context);
 
-  const fileWatcher = new FileWatcher(reader, storage, () => {
-    // Notify any open panels about data updates
-    if (DashboardPanel.currentPanel) {
-      DashboardPanel.currentPanel.sendMessage({ type: 'loading', loading: false });
-    }
-    updateStatusBar(analytics);
-  });
-
-  // Register sidebar webview provider
+  // Sidebar provider — created before fileWatcher so the callback can reference it
   const sidebarProvider = new SidebarProvider(
     context.extensionUri,
     messageHandler,
-    fileWatcher,
   );
+
+  const fileWatcher = new FileWatcher(reader, storage, () => {
+    try {
+      const stats = analytics.getDashboardStats();
+      const msg = { type: 'dashboard-stats' as const, data: stats };
+      if (DashboardPanel.currentPanel) {
+        DashboardPanel.currentPanel.sendMessage(msg);
+      }
+      sidebarProvider.postMessage(msg);
+    } catch { /* ignore if db not ready */ }
+    updateStatusBar(analytics);
+  });
+
+  // Give sidebar a reference to fileWatcher for manual refresh
+  sidebarProvider.setFileWatcher(fileWatcher);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
