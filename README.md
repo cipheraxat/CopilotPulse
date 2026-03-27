@@ -16,7 +16,7 @@
 
 ```bash
 # 1. Clone & install
-git clone https://github.com/your-username/copilot-pulse.git
+git clone https://github.com/cipheraxat/CopilotPulse.git
 cd copilot-pulse
 npm install && cd webview-ui && npm install && cd ..
 
