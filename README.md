@@ -73,7 +73,8 @@ Interactive charts powered by Recharts:
 ### Tool Usage
 Donut chart and ranked list of all tool calls (file reads, web searches, terminal commands) across sessions.
 
-<img width="732" height="1006" alt="image" src="https://github.com/user-attachments/assets/161c10bf-4ef5-481e-8a41-b9400efb4fd8" />
+<img width="515" height="671" alt="image" src="https://github.com/user-attachments/assets/7772858a-3526-4bdf-afdd-c1ef5c963d9b" />
+
 
 
 ### Per-Model Cost Estimation
