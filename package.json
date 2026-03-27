@@ -1,24 +1,53 @@
 {
   "name": "copilot-pulse",
-  "displayName": "CopilotPulse",
-  "description": "A local-first dashboard that tracks and visualizes your GitHub Copilot Chat usage — sessions, tokens, costs, and analytics — all inside VS Code.",
+  "displayName": "CopilotPulse — Copilot Chat Analytics",
+  "description": "Track your GitHub Copilot Chat usage — sessions, tokens, costs, and analytics — 100% local, no data leaves your machine.",
   "version": "0.1.0",
-  "publisher": "copilot-pulse",
+  "publisher": "cipheraxat",
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cipheraxat/CopilotPulse"
+  },
+  "bugs": {
+    "url": "https://github.com/cipheraxat/CopilotPulse/issues"
+  },
+  "homepage": "https://github.com/cipheraxat/CopilotPulse#readme",
   "categories": [
     "Visualization",
+    "Data Science",
     "Other"
   ],
   "keywords": [
     "copilot",
-    "pulse",
-    "dashboard",
-    "analytics",
+    "copilot chat",
+    "github copilot",
     "tokens",
-    "cost"
+    "cost",
+    "analytics",
+    "dashboard",
+    "usage",
+    "tracking",
+    "ai"
+  ],
+  "galleryBanner": {
+    "color": "#0d1117",
+    "theme": "dark"
+  },
+  "badges": [
+    {
+      "url": "https://img.shields.io/github/license/cipheraxat/CopilotPulse",
+      "href": "https://github.com/cipheraxat/CopilotPulse/blob/main/LICENSE",
+      "description": "License"
+    },
+    {
+      "url": "https://img.shields.io/github/stars/cipheraxat/CopilotPulse",
+      "href": "https://github.com/cipheraxat/CopilotPulse",
+      "description": "GitHub Stars"
+    }
   ],
   "activationEvents": [
     "onView:tokenDashboard.sidebar",

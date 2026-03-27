@@ -1,6 +1,5 @@
 <h1 align="center">CopilotPulse</h1>
 
-
 <p align="center">
   <img src="media/icon.png" alt="CopilotPulse" width="128" height="128">
 </p>
@@ -8,6 +7,13 @@
 <p align="center">
   <strong>Track the pulse of your AI coding assistant.</strong><br>
   A local-first VS Code extension that visualizes your GitHub Copilot Chat usage — sessions, tokens, costs, and analytics — all inside VS Code. No data leaves your machine.
+</p>
+
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><img src="https://img.shields.io/visual-studio-marketplace/v/cipheraxat.copilot-pulse?label=VS%20Code%20Marketplace&logo=visual-studio-code&color=007acc" alt="VS Code Marketplace"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=cipheraxat.copilot-pulse"><img src="https://img.shields.io/visual-studio-marketplace/i/cipheraxat.copilot-pulse?color=007acc" alt="Installs"></a>
+  <a href="https://github.com/cipheraxat/CopilotPulse/blob/main/LICENSE"><img src="https://img.shields.io/github/license/cipheraxat/CopilotPulse" alt="License"></a>
+  <a href="https://github.com/cipheraxat/CopilotPulse"><img src="https://img.shields.io/github/stars/cipheraxat/CopilotPulse?style=social" alt="GitHub Stars"></a>
 </p>
 
 ---
@@ -111,12 +117,17 @@ Live indicator showing your session count and total token usage.
 ┌──────────────────────────────────────────────────────────┐
 │  VS Code Workspace Storage                               │
 │  ~/Library/Application Support/Code/User/workspaceStorage│
-│  └─ */state.vscdb (SQLite)                               │
+│                                                          │
+│  ┌─ */GitHub.copilot-chat/transcripts/*.jsonl (primary)  │
+│  │  Full conversation transcripts: user messages,        │
+│  │  assistant responses, tool calls + arguments           │
+│  │                                                       │
+│  └─ */state.vscdb (SQLite) (fallback)                    │
 │     ├─ chat.ChatSessionStore.index  → session metadata   │
-│     ├─ memento/interactive-session  → user messages      │
+│     ├─ memento/interactive-session  → user input history  │
 │     └─ aiStats                      → AI output chars    │
 └───────────────┬──────────────────────────────────────────┘
-                │  CopilotDataReader (sql.js WASM)
+                │  CopilotDataReader (sql.js WASM + JSONL parser)
                 ▼
 ┌───────────────────────────────┐
 │  StorageService               │
@@ -133,7 +144,7 @@ Live indicator showing your session count and total token usage.
 └───────────────────────────────┘
 ```
 
-1. **CopilotDataReader** scans VS Code's `workspaceStorage` directories for `state.vscdb` files containing Copilot Chat data.
+1. **CopilotDataReader** scans VS Code's `workspaceStorage` directories — first reads transcript JSONL files for accurate conversation data, then falls back to `state.vscdb` for sessions without transcripts.
 2. **FileWatcher** detects changes and triggers re-sync with 2-second debounce.
 3. **StorageService** normalizes and persists data into a local SQLite database via sql.js (WASM).
 4. **AnalyticsService** runs SQL aggregations for dashboards and charts.
