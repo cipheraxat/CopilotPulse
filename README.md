@@ -40,7 +40,8 @@ npm run build
 ### Dashboard
 At-a-glance overview: today's sessions, total tokens, estimated cost, and recent activity.
 
-<img width="1677" height="966" alt="image" src="https://github.com/user-attachments/assets/184d9e44-1587-45e5-9671-cadd2be09136" />
+<img width="1643" height="844" alt="image" src="https://github.com/user-attachments/assets/9b042579-bf14-4899-b1ec-e24f0bcf26b8" />
+
 
 
 ### Session Browser
