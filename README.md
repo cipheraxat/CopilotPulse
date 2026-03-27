@@ -1,4 +1,4 @@
-<img width="1600" height="1541" alt="image" src="https://github.com/user-attachments/assets/58ae7a47-58ad-4154-8225-70a174204a9e" /># CopilotPulse
+# CopilotPulse
 
 <p align="center">
   <img src="media/icon.png" alt="CopilotPulse" width="128" height="128">
