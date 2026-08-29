@@ -35,6 +35,19 @@ context:
   max_snippet_chars: 2000
   neighbor_depth: 1
 
+vector:
+  enabled: true
+  embedding_model: openai/text-embedding-3-small
+  supabase:
+    enabled: true
+    table: code_embeddings
+    index_on_review: true
+    match_threshold: 0.55
+    vector_top_k: 8
+
+external_context:
+  enabled: false
+
 posting:
   min_confidence: 0.55
   max_inline_comments: 25
