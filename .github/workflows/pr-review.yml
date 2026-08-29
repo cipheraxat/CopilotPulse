@@ -4,14 +4,17 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   review:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate codereview-agent token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CODEREVIEW_APP_ID }}
+          private-key: ${{ secrets.CODEREVIEW_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -24,3 +27,4 @@ jobs:
           llm_model: openai/gpt-4o-mini
           config_path: reviewer.yaml
           dry_run: "false"
+          github_token: ${{ steps.app-token.outputs.token }}
