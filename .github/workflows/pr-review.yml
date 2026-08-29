@@ -20,6 +20,7 @@ jobs:
         uses: cipheraxat/codereviewer_agent/action@main
         with:
           llm_api_key: ${{ secrets.LLM_API_KEY }}
-          llm_provider: openai
+          llm_provider: openrouter
+          llm_model: openai/gpt-4o-mini
           config_path: reviewer.yaml
           dry_run: "true"
