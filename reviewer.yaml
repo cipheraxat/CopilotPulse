@@ -1,0 +1,40 @@
+languages:
+  - typescript
+  - javascript
+
+ignore_globs:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/out/**"
+  - "**/*.lock"
+  - "media/**"
+
+severity_threshold: medium
+
+custom_rules:
+  - id: no-console-log
+    description: Avoid console.log in extension source; use the extension output channel.
+    pattern: "console\\.log\\("
+    severity: low
+    category: quality
+
+  - id: vscode-disposable
+    description: VS Code subscriptions should be pushed to context.subscriptions.
+    pattern: "vscode\\.window\\.|vscode\\.commands\\."
+    severity: low
+    category: quality
+
+team_conventions: |
+  - CopilotPulse is local-first: never send user data to external servers.
+  - Keep webview <-> extension messaging typed and validated.
+  - Add or update vitest tests for behavior changes.
+  - Avoid breaking changes to stored local analytics schema without migration.
+
+context:
+  max_snippets: 12
+  max_snippet_chars: 2000
+  neighbor_depth: 1
+
+posting:
+  min_confidence: 0.55
+  max_inline_comments: 25
