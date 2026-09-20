@@ -24,3 +24,5 @@ jobs:
           llm_model: openai/gpt-4o-mini
           config_path: reviewer.yaml
           dry_run: "false"
+          supabase_url: ${{ secrets.SUPABASE_URL }}
+          supabase_service_role_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
